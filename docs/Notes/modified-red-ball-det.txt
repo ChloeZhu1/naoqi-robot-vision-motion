@@ -1,0 +1,630 @@
+
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <alvision/alimage.h>
+#include <alvision/alvisiondefinitions.h>
+#include <althread/alcriticalsection.h>
+#include <boost/shared_ptr.hpp>
+#include <alproxies/alvideodeviceproxy.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
+#include <alproxies/altexttospeechproxy.h>
+#include <althread/almutex.h>
+#include <alerror/alerror.h>
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include "opencv2/opencv.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
+#include <qi/log.hpp>
+
+////
+#include <iostream>
+#include <alerror/alerror.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <alproxies/alrobotpostureproxy.h>
+#include <alproxies/altexttospeechproxy.h>
+#include <alproxies/alredballdetectionproxy.h>
+//#include <alproxies/alnotificationmanagerproxy.h>
+#include <process.h>
+
+#include <alproxies/alvisualcompassproxy.h>
+
+#include <alproxies/alvideodeviceproxy.h>
+#include <alvision/alvisiondefinitions.h>
+#include <alvision/alimage.h>
+
+
+#include <alproxies/allandmarkdetectionproxy.h>
+
+#include <almath/types/altransform.h>
+
+#include <stdio.h>
+#include <math.h>
+#include <string>
+
+#include <cmath>
+#include<vector>
+
+using namespace AL::Math;
+using namespace std;
+using namespace AL;
+using namespace cv;
+
+#define pi 3.1415926
+#define dx 0.20  //the distance of hitting
+#define  robotIP  "192.168.1.101"
+
+AL::ALValue MovConfig, MovConfig_triangle ;
+float allballdata[7]={0};//save all the data of redball detection
+float landmark[5] ={0}; //save data of landMark detection
+float YellowAngle=0; 
+
+int ROBOT_STATE=1;
+#define SEARCH_RED_BALL	  1
+#define FIND_LANDMARK     2
+#define FIND_YELLOW       3
+#define CREATE_TRIANGLE	  4
+#define YELLOW_TRIANGLE   5
+#define HIT_BALL	  6
+#define NO_LANDMARK_YELLOW 7
+
+
+AL::ALMemoryProxy memoryProxy(robotIP, 9559);    
+AL::ALMotionProxy motionProxy(robotIP, 9559);    
+AL::ALRobotPostureProxy postureProxy(robotIP, 9559);
+AL::ALTextToSpeechProxy tts(robotIP, 9559);
+AL::ALVideoDeviceProxy cameraProxy(robotIP, 9559);
+AL::ALVisualCompassProxy compassProxy(robotIP,9559);
+AL::ALLandMarkDetectionProxy landmarkProxy(robotIP, 9559);
+
+//declare subfunctions
+void onTrackbar_changed(int, void*);
+void redball_detect( float*);
+void VerifyRedBallPresentBeforeHitting( float*);
+//void Go_to_Redball(AL::ALMotionProxy,  AL::ALVideoDeviceProxy, float*, float&, AL::ALValue, float&);
+void MovetowardsRedBallBeforeHitting( float*);
+bool landmark_Find( float*, float*);
+void TriangleCalculation(float*, float*, float*);
+void AdjustPosition( float*, float*, float*);
+void openhand();
+void closehand();
+void begin_puthand();
+void openclose();
+void  HitBall( float , float);
+void InitRobotParams(AL::ALValue*,  AL::ALValue *);   //InitRobotParams( &MovConfig,&MovConfig_triangle);
+int  PrepareRobot();
+void Kick_off( );
+void DirectHit();
+void TRIANGLE_MAKING(float *allballdata,  float *landmark );
+void CloseRedBallSearching( float *allballdata);
+void LandMarkSearching(float *allballdata );
+float YellowStickDetect_SunUp( );
+void STICK_RED_Triangle(float *allballdata  );
+float YellowStickSearching();
+void  Task_two();
+namespace
+{
+    // windows and trackbars name
+    const std::string windowName = "GREEN";
+	const std::string cannyThresholdTrackbarName = "Canny threshold";
+    const std::string accumulatorThresholdTrackbarName = "Accumulator Threshold";
+    const std::string usage = "Usage : tutorial_HoughCircle_Demo <path_to_input_image>\n";
+    const std::string window_name = "BLUE ";
+    const std::string window_red = "RED";
+    // initial and max values of the parameters of interests.
+    const int cannyThresholdInitialValue = 200;
+    const int accumulatorThresholdInitialValue = 16;
+    const int maxAccumulatorThreshold = 200;
+    const int maxCannyThreshold = 255;	
+   
+
+	
+}
+//Global variable for hsv color wheel plot
+//RNG rng(12345);//黄杆
+int max_hue_range = 179;
+int max_step = 3; //nuber of pixel for each hue color
+int wheel_width = max_hue_range*max_step;
+int wheel_hight = 50;
+int wheel_x = 50; //x-position of wheel
+int wheel_y = 5;//y-position of wheel
+
+Mat HSV;
+#define HUEMAX 179
+#define SATMAX 255
+#define VALMAX 255
+int MAX_H = 179;
+int MAX_S = 255;
+int MAX_V = 255;
+int mouse_x = 0;
+//Global variable plot for satuarion-value plot
+int S_V_Width = MAX_S;
+int S_V_Height = MAX_S;
+int S_V_x = 10;
+int S_V_y = wheel_y + wheel_hight + 20;
+//Global variable for HSV ploat
+int HSV_Width = 150;
+int HSV_Height = 150;
+int HSV_x = S_V_x + S_V_Width + 30;
+int HSV_y = S_V_y + 50;
+void onTrackbar_changed(int, void*){
+ //Plot color wheel.
+ int hue_range = 0;
+ int step = 1;
+ for (int i = wheel_y; i < wheel_hight + wheel_y; i++){
+  hue_range = 0;
+  for (int j = wheel_x; j < wheel_width + wheel_x; j++){
+   if (hue_range >= max_hue_range) hue_range = 0;
+   if (step++ == max_step){
+    hue_range++;
+    step = 1;
+   }
+Vec3b pix;
+   pix.val[0] = hue_range;
+   pix.val[1] = 255;
+   pix.val[2] = 255;
+
+   //HSV.at<Vec3b>(i, j) = pix;
+  }
+ }
+}
+
+
+/********Detect red_ball*****//****检测红球*****/
+void redball_detect( float *allballdata)
+{
+     AL::ALVideoDeviceProxy camProxy(robotIP, 9559);                               // ALVideoDeviceProxy 用于操作视频设备，NAO的IP地址、端口号
+     AL::ALMotionProxy motionProxy(robotIP, 9559);
+	 AL::ALTextToSpeechProxy fTtsProxy(robotIP, 9559);
+  
+//use to test
+	std::string names  = "Head";
+    float stiffnessLists  = 1.0f;
+    float timeLists  = 1.0f;
+    motionProxy.stiffnessInterpolation(names, stiffnessLists, timeLists); 
+
+ Mat src, src_gray, frameHSV, channel[3], frameHSV_BW, channel_HSV[3];
+ Mat pass[3];
+ Mat frame, frameCopy, image;
+	 int cameraId = 1;//0:camera_up，1:camrea_bottom
+	 cameraProxy.setActiveCamera(cameraId);
+	 std::string clientName = "test";
+	 clientName = cameraProxy.subscribe(clientName, kVGA, kBGRColorSpace, 1);//fps=5
+
+	 cv::Mat imgHeader = cv::Mat(cv::Size(640, 480),CV_8UC3); 
+	 
+
+ int Hm = 7;//白天6 晚上7
+ 
+ //declare and initialize both parameters that are subjects to change
+ int cannyThreshold = cannyThresholdInitialValue;
+ int accumulatorThreshold = accumulatorThresholdInitialValue;
+ // create the main window, and attach the trackbars
+// namedWindow(windowName, WINDOW_AUTOSIZE);
+// createTrackbar(cannyThresholdTrackbarName, windowName, &cannyThreshold, maxCannyThreshold);
+ //createTrackbar(accumulatorThresholdTrackbarName, windowName, &accumulatorThreshold, maxAccumulatorThreshold);
+// namedWindow(window_name);
+ //createTrackbar("Hue Min", window_name, &Hm, HUEMAX, onTrackbar_changed);
+ //HSV.create(640, 480, CV_8UC3); //Mat to store clock image
+// HSV.setTo(Scalar(200, 0, 200));
+ onTrackbar_changed(0, 0); //initialoze window
+ 
+ int redballFlag = 0;//the flag of having detected red ball
+ int   loseBallTimes = 0;
+ float m_center_x= 0;
+ float m_center_y= 0;
+ float redballradius=0.02f;
+ float theta1=0;
+ float theta2=0;
+ float d1_a=0;
+float d2_a=0;
+float d1=0;
+float d2=0;
+float Xw2=0;
+float Yw2=0;
+float Zw=0;
+float Dis_move=0;
+
+//float fx=558.8f; //437.2f 
+//float fy=561.7f; //414.7f
+float CameraHeight=0;
+float CameraX=0;
+float CameraY=0;
+ for(int i=0; i<3; i++)
+  {	  
+	  std::vector<float>result = motionProxy.getPosition("CameraBottom",2,true);//bottom
+	   CameraHeight = result.at(2);
+	   CameraX = result.at(0);
+	   CameraY = result.at(1);
+	  std::vector<float> Rotation1 = motionProxy.getAngles("HeadPitch", true);
+	  float pitch=Rotation1.at(0);
+	   std::vector<float> Rotation2 = motionProxy.getAngles("HeadYaw", true);
+	  float yaw=Rotation2.at(0);
+
+    AL::ALValue img= cameraProxy.getImageRemote(clientName);
+	while(!img.getSize())
+	{  
+		std::cout<<"img is empty"<<std::endl;
+		//cameraProxy.unsubscribe(clientName);//cancle subscribing to camera
+		//clientName = cameraProxy.subscribe(clientName, kVGA, kBGRColorSpace, 5);//fps=5,resubscribe
+	   img= cameraProxy.getImageRemote(clientName);
+	}
+    imgHeader.data = (uchar*)img[6].GetBinary(); //error  
+     Mat frame = imgHeader.clone();  //Mat
+	
+  
+   //split the channels in order to manrobotIPulate them
+   split(frame, channel);
+   //threshold(channel[2], channel[2], 130, 255, 0);
+   
+   //To get the RED only
+   channel[0] = channel[0].mul(.1*Hm); //B
+   channel[1] = channel[1].mul(.1*Hm);//G
+   channel[2] = channel[2] - channel[0] - channel[1]; //R
+   channel[2] =3* channel[2] ;
+  
+   cannyThreshold = std::max(cannyThreshold, 1);
+   accumulatorThreshold = std::max(accumulatorThreshold, 1);
+        std::vector<Vec3f> circles;
+        // runs the actual detection   //调用Hough变换检测圆
+        HoughCircles( channel[2], circles, CV_HOUGH_GRADIENT, 1, frame.rows/8, cannyThreshold, accumulatorThreshold, 0, 0 );
+
+
+     redballFlag = circles.size();//flag of finding the ball
+	 
+	 redballradius=0.025f;
+     for( size_t i = 0; i < circles.size(); i++ )
+        {
+           // Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+           // int radius = cvRound(circles[i][2]);
+           // circle( frame, center, 3, Scalar(0,255,0), -1, 8, 0 );
+           // circle( frame, center, radius, Scalar(0,0,255), 3, 8, 0 );
+			//std::cout<<"Center_X:"<<circles[i][0]<<std::endl;
+			//std::cout<<"Center_Y:"<<circles[i][1]<<std::endl;
+		     m_center_x= circles[i][0];
+	         m_center_y= circles[i][1];
+             
+			 //方法2,无需内参，考虑了转头（上下左右）   NAO定位目标物
+			d1_a=(m_center_y-240.0f)*47.64f/480.0f*0.01744f;
+			d1=(CameraHeight-redballradius)/tan(0.6929f+pitch+d1_a);//对比
+			d2_a=(320.0f-m_center_x)*60.92f/640.0f*0.01744f;
+			d2=d1/cos(d2_a);
+			Xw2=d2*cos(d2_a+yaw)+CameraX;
+
+			Yw2=d2*sin(d2_a+yaw)+CameraY;
+			//Yw2=((CameraHeight-redballradius)*theta1)/(sin(0.6929f+pitch-atan(theta2))*std::sqrt(1+theta2*theta2))+CameraY;
+			Zw=redballradius;
+			Dis_move=sqrt(Xw2*Xw2+Yw2*Yw2);     //定义所移动的距离
+		//   float ballToRobot=std::sqrt( Xw*Xw + Yw*Yw +Zw*Zw);
+	          
+        }
+	 if(redballFlag==1)
+		 break;   
+        //imshow("original image: " , frame);
+  }
+    
+    cameraProxy.unsubscribe(clientName);//cancle subscribing to camera device
+
+    *allballdata     = d2_a; //centerX
+	*(allballdata+1) = d1_a; //centerY
+	*(allballdata+2) = Xw2;  //composition distance in X & Y axis of robot
+	*(allballdata+3) = Yw2;  //distance in X axis of robot
+	*(allballdata+4) = redballFlag;
+	*(allballdata+5) = CameraHeight;
+	*(allballdata+6) = Dis_move;
+
+//display for test:输出所检测到的数据
+	std::cout<< "...... "<<std::endl;
+	std::cout<< "以下为redball检测数据："<<std::endl;
+	std::cout<< "wzCamera: "<<d1_a<<std::endl;
+	std::cout<< "wyCamera: "<<d2_a<<std::endl;
+	std::cout<< "Distance_X: "<<Xw2<<std::endl;
+	std::cout<< "Distance_Y: "<<Yw2<<std::endl;
+	std::cout<< "Distance_move: "<<Dis_move<<std::endl;
+	std::cout<< "redball_Flag: "<<redballFlag<<std::endl;
+	std::cout<< "camera_Height: "<<CameraHeight<<std::endl;
+	std::cout<< "...... "<<std::endl;
+}
+
+
+/********************寻找红球&走向红球*****************************/
+void VerifyRedBallPresentBeforeHitting( float *allballdata)
+{
+	AL::ALMotionProxy motionProxy(robotIP,9559);
+	AL::ALRobotPostureProxy postureProxy(robotIP, 9559);
+	AL::ALMemoryProxy memoryProxy(robotIP, 9559);
+	AL::ALRedBallDetectionProxy redballProxy(robotIP, 9559);
+	AL::ALVideoDeviceProxy cameraProxy(robotIP, 9559);
+	AL::ALTextToSpeechProxy tts(robotIP, 9559);
+
+//头部位置初始化
+	float maxSpeed1 = 0.3f; // Using 30% of maximum joint speed, Pitch
+	float maxSpeed2 = 0.2f; // Using 50% of maximum joint speed, Yaw  偏航
+	motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00, maxSpeed1);//头下低21.4度:0.373
+	motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00, maxSpeed2);
+	
+//#移动后进行全面搜索()
+	float wzCamera1 = 0, wzCamera2 = 0, wzCamera3 = 0;
+	float wyCamera1 = 0, wyCamera2 = 0, wyCamera3 = 0;
+	//float angularSize1 = 0, angularSize2 = 0, angularSize3 = 0;
+	float head_yaw1 =0, head_yaw2 =0, head_yaw3 =0;
+	int redball_flag1 = 0, redball_flag2 = 0, redball_flag3 = 0;
+    //步态设置
+    AL::ALValue one  = AL::ALValue::array("MaxStepX", 0.02); //0.001~0.080, Default:0.040,地面越硬数值越大
+	AL::ALValue two  = AL::ALValue::array("MaxStepY", 0.1); //0.101~0.160, Default:0.140
+	AL::ALValue three= AL::ALValue::array("MaxStepTheta", 0.4); //0.001~0.524, Default:0.349
+	AL::ALValue four = AL::ALValue::array("MaxStepFrequency", 0.3);//0~1, Default:1
+    AL::ALValue five = AL::ALValue::array("StepHeight",0.020); //0.005~0.040, Default:0.020
+	AL::ALValue six  = AL::ALValue::array("TorsoWx",0.00); //-0.122~0.122, Default:0.000
+	
+	AL::ALValue moveConfig=AL::ALValue::array(one,two,three,four,five,six);
+    //////
+    motionProxy.moveTo(0.2, 0.0, 0.0, moveConfig);      //移动20cm后开始找红球，可以不走  
+    Sleep(2000);
+	
+	
+	float head_yaw =0;
+	int   redball_Flag = 0;
+
+int SEARCH_STATE=1;
+#define STRAIGHT_FORWARD 1
+#define STRAIGHT_LEFT    2
+#define STRAIGHT_RIGHT   3
+#define DOWN_RIGHT       4
+#define DOWN_FORWARD     5
+#define DOWN_LEFT        6
+#define MOVE             7
+	
+int MOVE_STATE  =0;
+#define MOVE_FORWARD     1
+#define MOVE_TO_RIGHT    2
+#define MOVE_TO_LEFT     3
+#define MOVE_TO_RF       4
+
+redball_detect(allballdata);                               //寻找红球
+
+while(*(allballdata+4) != 1)
+{
+
+
+	switch(SEARCH_STATE)
+	{
+	     case STRAIGHT_FORWARD:
+				//look straight                           往正前方看
+				std::cout<<"look straight forward..."<<std::endl;
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);
+				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00f, 0.2f);
+				//start to detect redball
+				redball_detect(allballdata); //callback "redball_detect" function
+				head_yaw = 0.00;  
+				if(*(allballdata+4) != 1){
+					SEARCH_STATE++;
+				}
+				break;
+
+		 case STRAIGHT_LEFT:                      
+			      //look at left                        往左方看（头部向左偏转45度--偏航角yaw）
+				 std::cout<<"look straight on left..."<<std::endl;
+				 motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);
+				 motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.785f, 0.2f);
+				 //start to detect redball
+				 redball_detect(allballdata); //callback "redball_detect" function
+				 head_yaw = 0.785;                     //输出偏航角45度
+				 if(*(allballdata+4) !=1){
+					SEARCH_STATE++;
+				}
+				break;
+
+		 case STRAIGHT_RIGHT: 
+			     //look at right                     往右方看（头部向右偏转45度--偏航角yaw）
+				std::cout<<"look straight on right..."<<std::endl;
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);
+				motionProxy.angleInterpolationWithSpeed("HeadYaw", -0.785f, 0.2f);
+				//start to detect redball
+				redball_detect( allballdata); //callback "redball_detect" function
+				head_yaw = -0.785;
+				if(*(allballdata+4) != 1){
+					SEARCH_STATE++;
+				}
+				break;
+
+		 case DOWN_RIGHT:
+			    //look down right                    往右下方看（头部向右偏转45度--偏航角yaw，向下偏转20度pitch）
+				std::cout<<"look down right...:"<<std::endl;
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
+				motionProxy.angleInterpolationWithSpeed("HeadYaw", -0.785f, 0.2f);
+				//start to detect redball
+				redball_detect(allballdata); //callback "redball_detect" function
+				head_yaw = -0.785;  
+				if(*(allballdata+4) != 1){
+					SEARCH_STATE++;
+				}
+				break;
+
+		 case DOWN_FORWARD:
+			    //look down forward                    往正下方看（向下偏转20度pitch）
+				std::cout<<"look down forward..."<<std::endl;
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
+				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00f, 0.2f);
+				//start to detect redball
+				redball_detect(allballdata); //callback "redball_detect" function
+				head_yaw = 0.00;  
+				if(*(allballdata+4) != 1){
+					SEARCH_STATE++;
+				}
+				break;
+
+		 case DOWN_LEFT:     
+			    //look down left                    往左下方看（头部向右偏转45度--偏航角yaw，向下偏转20度pitch）
+				std::cout<<"look down left..."<<std::endl;
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
+				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.785f, 0.2f);
+				//start to detect redball
+				redball_detect(allballdata); //callback "redball_detect" function
+				head_yaw = 0.785;  
+				if(*(allballdata+4) != 1){
+					tts.say("red ball is not insight.");
+					std::cout<<"there is no redball insight..."<<std::endl;
+					SEARCH_STATE++;
+					MOVE_STATE++;
+				}
+				break;
+         
+		 case MOVE:
+			 //there is no redball insight, robot change its position
+			 switch(MOVE_STATE){
+			      case MOVE_FORWARD:
+					    //move ahead
+						std::cout<<"move ahead..."<<std::endl;
+						motionProxy.moveTo(0.2, 0.0, 0.0,MovConfig);
+						SEARCH_STATE=1;
+						break;
+
+				  case MOVE_TO_RIGHT:
+					   //move to the right
+						std::cout<<"move to the right..."<<std::endl;
+						motionProxy.moveTo(0.0, 0, -0.785f,MovConfig);
+						SEARCH_STATE=1;
+						break;
+
+				  case MOVE_TO_LEFT:
+					  //move to the left
+						std::cout<<"move to the left..."<<std::endl;
+						motionProxy.moveTo(0.0, 0.0, 0.785f,MovConfig);
+						SEARCH_STATE=1;
+						break;
+
+				  case MOVE_TO_RF:
+					  //move to the right front
+					    motionProxy.moveTo(0.0, 0.0, -0.53f,MovConfig);
+						std::cout<<"move to the right front..."<<std::endl;
+						motionProxy.moveTo(0.524, -0.524, 0.0,MovConfig);
+						SEARCH_STATE=1;
+						break;
+
+				  default:
+					    SEARCH_STATE=1;
+					    MOVE_STATE=0;
+
+			 
+			 }
+			 break;
+
+		 default:
+			    
+				std::cout<<"red ball search error..."<<std::endl;				
+	
+	}
+
+}
+//give the report of redball direction.
+
+    if (head_yaw == 0){
+			tts.say("redball is in front !");  //front         	
+		    }
+    if (head_yaw > 0){
+			tts.say("redball is on the left !");  //left   	
+		    }
+    if (head_yaw < 0){
+			tts.say("redball is on the right !");  //right      
+		    } 
+    //Display all ball data!
+    std::cout<< "************"<<std::endl;
+    std::cout<< "Redball Data Shown as Follow: "<<std::endl;
+	std::cout<< "wzCamera: "<<*allballdata<<std::endl;
+	std::cout<< "wyCamera: "<<*(allballdata+1)<<std::endl;
+	std::cout<< "Distance_X: "<<*(allballdata+2)<<std::endl;
+	std::cout<< "Distance_Y: "<<*(allballdata+3)<<std::endl;
+	std::cout<< "Dis_move: "<<*(allballdata+6)<<std::endl;
+	std::cout<< "redball_Flag: "<<*(allballdata+4)<<std::endl;
+	std::cout<< "camera_Height: "<<*(allballdata+5)<<std::endl;
+	std::cout<< "head_yaw: "<<head_yaw<<std::endl;
+	std::cout<< "************"<<std::endl;
+	
+
+/////////移动至红球///////////
+//第一次，机器人转到正对红球的方向，机器人所偏转的角度是上一步对红球定位的角度theta
+    float theta = head_yaw + *allballdata;        //theta角就是偏航角+d2_a
+	//angle = theta;//第一个转角保存在angle中
+
+//机器人头部调正
+    motionProxy.setMoveArmsEnabled(true, false);
+    motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.5);
+	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.35f);//保持低头21.4度:0.373
+	//turn around
+	motionProxy.moveTo(0, 0, theta, MovConfig);
+
+    motionProxy.setMoveArmsEnabled(true, false);
+//第二次，机器人移动至距离红球40cm距离
+	if(*(allballdata+6)>0.4){
+	 motionProxy.moveTo(*(allballdata+6)-0.4, 0, 0, MovConfig);}
+
+//第三次，机器人低头再次检测红球，调整角度
+	motionProxy.setMoveArmsEnabled(true, false);
+    motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
+	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.3f);//保持低头21.4度:0.373
+	//Sleep(1000);
+	motionProxy.waitUntilMoveIsFinished();
+	redball_detect(allballdata); //callback "redball_detect" function
+    head_yaw = 0.00;
+//第四次，机器人移动至距离红球30cm距离   
+	theta = head_yaw + *allballdata;
+	//angle += theta;//第二个转角保存在angle中
+	motionProxy.setMoveArmsEnabled(true, false);
+	motionProxy.moveTo(0, 0, theta, MovConfig);
+    //compassProxy.moveStraightTo(*(allballdata+2)-0.3); //向前向后距离矫正，距红球30cm
+	motionProxy.moveTo(*(allballdata+6)-0.3, 0, 0,MovConfig); //向前向后距离矫正，距红球30cm
+//最终绕开小球
+	motionProxy.moveTo(0, 0, 1.57, MovConfig);//向左转90度
+	 motionProxy.moveTo(0.2, 0, 0, MovConfig);
+	  motionProxy.moveTo(0, 0, -1.57, MovConfig);
+	   motionProxy.moveTo(0.3, 0, 0, MovConfig);
+}
+
+int main(int argc, char* argv[]) {
+
+	//initialize object
+	AL::ALMemoryProxy memoryProxy(robotIP, 9559);     //  memory  object
+    AL::ALMotionProxy motionProxy(robotIP, 9559);     //  motion  object
+	AL::ALRobotPostureProxy postureProxy(robotIP, 9559);
+	AL::ALTextToSpeechProxy tts(robotIP, 9559);
+	AL::ALRedBallDetectionProxy redballProxy(robotIP, 9559);
+	AL::ALVideoDeviceProxy cameraProxy(robotIP, 9559);
+	AL::ALLandMarkDetectionProxy landmarkProxy(robotIP, 9559);
+
+
+	//步态设置
+    AL::ALValue one  = AL::ALValue::array("MaxStepX", 0.02); //0.001~0.080, Default:0.040,地面越硬数值越大
+	AL::ALValue two  = AL::ALValue::array("MaxStepY", 0.1); //0.101~0.160, Default:0.140
+	AL::ALValue three= AL::ALValue::array("MaxStepTheta", 0.4); //0.001~0.524, Default:0.349
+	AL::ALValue four = AL::ALValue::array("MaxStepFrequency", 0.3);//0~1, Default:1
+    AL::ALValue five = AL::ALValue::array("StepHeight",0.020); //0.005~0.040, Default:0.020
+	AL::ALValue six  = AL::ALValue::array("TorsoWx",0.00); //-0.122~0.122, Default:0.000
+	
+	AL::ALValue moveConfig=AL::ALValue::array(one,two,three,four,five,six);
+
+  try {
+   
+	motionProxy.wakeUp();
+	postureProxy.goToPosture("StandInit", 0.5);
+	   motionProxy.moveTo(0.5, 0, 0, moveConfig);
+
+
+
+    }
+
+
+
+  catch (const AL::ALError& e) {
+   std::cerr << "Caught exception: " << e.what() << std::endl;
+    exit(1);
+  }
+  exit(0);
+}

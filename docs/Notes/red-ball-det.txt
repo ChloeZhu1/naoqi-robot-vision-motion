@@ -1,0 +1,279 @@
+//*
+//*
+//***recognize the red ball*****//
+
+
+#include <alvalue/alvalue.h>
+#include <alcommon/alproxy.h>
+#include <alcommon/albroker.h>
+#include <alvision/alimage.h>
+#include <alvision/alvisiondefinitions.h>
+#include <althread/alcriticalsection.h>
+#include <boost/shared_ptr.hpp>
+#include <alproxies/alvideodeviceproxy.h>
+#include <alproxies/almemoryproxy.h>
+#include <alproxies/almotionproxy.h>
+#include <althread/almutex.h>
+#include <alproxies/altexttospeechproxy.h>
+#include <althread/almutex.h>
+#include <alerror/alerror.h>
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include "opencv2/opencv.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
+#include <string>
+#include <iostream>
+#include <math.h>
+#include<cmath>
+#include <qi/log.hpp>
+
+
+
+using namespace AL;
+using namespace std;
+using namespace cv;
+
+
+namespace
+{
+    // windows and trackbars name
+    const std::string windowName = "GREEN";
+	const std::string cannyThresholdTrackbarName = "Canny threshold";
+    const std::string accumulatorThresholdTrackbarName = "Accumulator Threshold";
+    const std::string usage = "Usage : tutorial_HoughCircle_Demo <path_to_input_image>\n";
+    const std::string window_name = "BLUE ";
+    const std::string window_red = "RED";
+    // initial and max values of the parameters of interests.
+    const int cannyThresholdInitialValue = 200;
+    const int accumulatorThresholdInitialValue = 16;
+    const int maxAccumulatorThreshold = 200;
+    const int maxCannyThreshold = 255;
+	
+}
+//Global variable for hsv color wheel plot
+int max_hue_range = 179;
+int max_step = 3; //nuber of pixel for each hue color
+int wheel_width = max_hue_range*max_step;
+int wheel_hight = 50;
+int wheel_x = 50; //x-position of wheel
+int wheel_y = 5;//y-position of wheel
+Mat HSV;
+#define HUEMAX 179
+#define SATMAX 255
+#define VALMAX 255
+int MAX_H = 179;
+int MAX_S = 255;
+int MAX_V = 255;
+int mouse_x = 0;
+//Global variable plot for satuarion-value plot
+int S_V_Width = MAX_S;
+int S_V_Height = MAX_S;
+int S_V_x = 10;
+int S_V_y = wheel_y + wheel_hight + 20;
+//Global variable for HSV ploat
+int HSV_Width = 150;
+int HSV_Height = 150;
+int HSV_x = S_V_x + S_V_Width + 30;
+int HSV_y = S_V_y + 50;
+void onTrackbar_changed(int, void*){
+ //Plot color wheel.
+ int hue_range = 0;
+ int step = 1;
+ for (int i = wheel_y; i < wheel_hight + wheel_y; i++){
+  hue_range = 0;
+  for (int j = wheel_x; j < wheel_width + wheel_x; j++){
+   if (hue_range >= max_hue_range) hue_range = 0;
+   if (step++ == max_step){
+    hue_range++;
+    step = 1;
+   }
+Vec3b pix;
+   pix.val[0] = hue_range;
+   pix.val[1] = 255;
+   pix.val[2] = 255;
+
+   //HSV.at<Vec3b>(i, j) = pix;
+  }
+ }
+}
+
+int main(int argc, char** argv)         //整数类型主函数(整数类型统计参数个数,字符类型指针数组指向字符串参数)
+{
+	  AL::ALVideoDeviceProxy camProxy("192.168.1.101", 9559);
+      AL::ALMotionProxy motionProxy("192.168.1.101", 9559);
+	//  AL::ALTextToSpeechProxy fTtsProxy("192.168.1.102", 9559);
+
+
+//use to test
+	std::string names  = "Head";
+    float stiffnessLists  = 1.0f;
+    float timeLists  = 1.0f;
+    motionProxy.stiffnessInterpolation(names, stiffnessLists, timeLists); 
+//	AL::ALValue headNames = AL::ALValue::array("HeadYaw","HeadPitch");
+//	motionProxy.angleInterpolationWithSpeed(headNames,targetAngles,maxSpeedFraction);
+	
+
+
+ Mat src, src_gray, frameHSV, channel[3], frameHSV_BW, channel_HSV[3];
+ Mat pass[3];
+ Mat frame, frameCopy, image;
+	 int cameraId = 1;//0上，1下
+	 camProxy.setActiveCamera(cameraId);
+	 std::string clientName = camProxy.subscribe("test", kVGA, kBGRColorSpace, 1);//fps=5
+
+	 cv::Mat imgHeader = cv::Mat(cv::Size(640, 480),CV_8UC3); 
+ int Hm = 7;
+ int Sm = 20;
+ int Vm = 255;
+ int R = 0;
+ int G = 0;
+ int B = 0;
+ int HM = 14;
+ int SM = 255;
+ int VM = 255;
+
+ //declare and initialize both parameters that are subjects to change
+ int cannyThreshold = cannyThresholdInitialValue;
+ int accumulatorThreshold = accumulatorThresholdInitialValue;
+ // create the main window, and attach the trackbars
+ namedWindow(windowName, WINDOW_AUTOSIZE);
+ createTrackbar(cannyThresholdTrackbarName, windowName, &cannyThreshold, maxCannyThreshold);
+ createTrackbar(accumulatorThresholdTrackbarName, windowName, &accumulatorThreshold, maxAccumulatorThreshold);
+ namedWindow(window_name);
+ createTrackbar("Hue Min", window_name, &Hm, HUEMAX, onTrackbar_changed);
+ HSV.create(640, 480, CV_8UC3); //Mat to store clock image
+ HSV.setTo(Scalar(200, 0, 200));
+ onTrackbar_changed(0, 0); //initialoze window
+ 
+ //float sumx=0.0;
+//	float sumy=0.0;
+
+// while (1)
+ for(int n=0;n<5;n++)
+
+  {
+	  std::vector<float>result = motionProxy.getPosition("CameraBottom",2,true);//bottom
+	  float CameraHeight = result.at(2);
+	  float CameraX = result.at(0);
+	  float CameraY = result.at(1);
+	  
+	  std::vector<float> Rotation1 = motionProxy.getAngles("HeadPitch", true);
+	  float pitch=Rotation1.at(0);
+	  std::vector<float> Rotation2 = motionProxy.getAngles("HeadYaw", true);
+	  float yaw=Rotation2.at(0);
+
+    ALValue img = camProxy.getImageRemote(clientName);
+    imgHeader.data = (uchar*)img[6].GetBinary();   
+    Mat frame = imgHeader.clone();  
+ 
+  
+   //split the channels in order to manipulate them
+   split(frame, channel);
+   //threshold(channel[2], channel[2], 130, 255, 0);
+   
+   //To get the RED only
+   channel[0] = channel[0].mul(.1*Hm); //B
+   channel[1] = channel[1].mul(.1*Hm);//G
+   channel[2] = channel[2] - channel[0] - channel[1]; //R
+
+   double minVal, maxVal;
+  // int x, y;
+   minMaxLoc(channel[0], &minVal, &maxVal);
+   for (int i = 0; i < channel[1].cols; i++)
+   {
+    for (int j = 0; j < channel[1].rows; j++){
+     if (channel[2].at<unsigned char>(j, i)  < 0)
+      channel[2].at<unsigned char>(j, i) = 0;
+    }
+   }
+   //printf("%f", maxVal);
+  // imshow(window_red, channel[0]);
+ // imshow(windowName, channel[1]);
+  imshow(window_name, channel[2]);
+
+  
+   cannyThreshold = std::max(cannyThreshold, 1);
+   accumulatorThreshold = std::max(accumulatorThreshold, 1);
+        std::vector<Vec3f> circles;                           // 存储检测到的圆://【检测结果 向量】
+        // runs the actual detection                          //参数：src，输出数组，霍夫梯度，dp？，最小圆心距，Canny阈值，累加阈值        //它的参数是CV_HOUGH_GRADIENT
+        HoughCircles( channel[2], circles, CV_HOUGH_GRADIENT, 1, frame.rows/8, cannyThreshold, accumulatorThreshold, 0, 0 );//CV_HOUGH_GRADIENT: 指定检测方法. 现在OpenCV中只有霍夫梯度法
+
+
+     for( size_t i = 0; i < circles.size(); i++ )                         //依次在图中绘制出检测到的圆
+        {
+            Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));//cvRound获得浮点数最近的整数   参数定义            三个元素的浮点型矢量（x,y,radius）
+            int radius = cvRound(circles[i][2]);
+            circle( frame, center, 3, Scalar(0,255,0), -1, 8, 0 );       //绘制圆心    scalar是将图像设置成单一灰度和颜色  Scalar(0,255,0)是将圆心处为绿色
+            circle( frame, center, radius, Scalar(0,0,255), 3, 8, 0 );   //绘制圆轮廓                                      Scalar(0,0,255)是将圆心处为红色
+			//std::cout<<"圆心X="<<circles[i][0]<<std::endl;
+		  //  std::cout<<"圆心Y="<<circles[i][1]<<std::endl;
+			 float m_center_x= circles[i][0];                        
+	         float m_center_y= circles[i][1];
+             float redballradius=0.025f;
+
+
+
+
+	//way2  (网上的几何测距算法)
+	float d1_a=(m_center_y-240.0f)*47.64f/480.0f*0.01744f;
+	float d1=(CameraHeight-redballradius)/tan(0.6929f+pitch+d1_a);//对比
+	float d2_a=(320.0f-m_center_x)*60.97f/640.0f*0.01744f;
+	float d2=d1/cos(d2_a);
+    float Xw2=d2*cos(d2_a+yaw)+CameraX;
+    float Yw2=d2*sin(d2_a+yaw)+CameraY;
+
+      // sumx=sumx+Xw2;
+//	 sumy=sumy+Yw2;
+
+
+	//way1
+
+
+    //float fx=558.8f; //CameraBottom
+    //float fy=561.7f;
+	//float theta1=(320.0f-m_center_x)/fx;
+	//float theta2=(m_center_y-238.0f)/fy;
+	//float Xw=(CameraHeight-redballradius)/tan( 0.6929f+pitch+atan(theta2))+CameraX;
+	//float Yw=((CameraHeight-redballradius)*theta1)/(sin(0.6929f+pitch+atan(theta2))*std::sqrt(1+theta2*theta2))+CameraY;
+
+
+//	std::cout<<"CameraHeight="<<CameraHeight<<std::endl;
+	//std::cout<<"CameraX="<<CameraX<<std::endl;
+	//std::cout<<"CameraY="<<CameraY<<std::endl;
+	//std::cout<<"pitch="<<pitch<<std::endl;
+	//std::cout<<"yaw="<<yaw<<std::endl;
+	std::cout<<"Xw2="<<Xw2<<std::endl;
+	std::cout<<"Yw2="<<Yw2<<std::endl;
+    //std::cout<<"Xw="<<Xw<<std::endl;
+	//std::cout<<"Yw="<<Yw<<std::endl;
+std::cout<<"***************"<<std::endl;
+	
+       
+		}
+	 /*
+		std::cout<<"X="<<sumx<<std::endl;
+	std::cout<<"Y="<<sumy<<std::endl;
+		*/
+
+
+ imshow("原图" , frame);
+
+
+
+
+   if (waitKey(10) >= 0)
+    break;
+   camProxy.releaseImage(clientName);
+ }
+  //}
+   camProxy.unsubscribe(clientName);
+   destroyAllWindows();
+ }
+ 
+   
+
+
