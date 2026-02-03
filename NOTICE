@@ -1,8 +1,7 @@
-```text
 This repository contains code based on or derived from Aldebaran Robotics NAOqi
 C++ examples (see copyright headers in source files).
 
 NAOqi SDK and related libraries are subject to their respective licenses and
 distribution terms. Please ensure you comply with NAOqi/SoftBank Robotics
 licensing when building or redistributing binaries.
-```
+
