@@ -51,14 +51,6 @@ You’ll need to link against NAOqi libraries and OpenCV manually using your SDK
 Some files include headers from Aldebaran Robotics example code.
 See [NOTICE](NOTICE) for attribution and keep original headers intact.
 
-## Suggested improvements (if you want to modernize this project)
-* Refactor into modules:
-  * perception/ (ball + landmark detection)
-  * control/ (walking + alignment)
-  * state_machine/ (explicit transitions + logging)
-* Replace hardcoded IP/config with a config file or CLI flags
-* Add a diagram + demo video/GIF in [assets/](assets/)
-
 ```graphql
 nao-robot-vision-motion/
 ├─ README.md
