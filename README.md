@@ -27,6 +27,7 @@ A second variant of the same project (e.g., a different robot competition iterat
 * ALMotionProxy for walking and joint control
 * ALRobotPostureProxy for posture initialization
 * Configurable gait parameters
+## Dependencies
   
 ```graphql
 nao-robot-vision-motion/
