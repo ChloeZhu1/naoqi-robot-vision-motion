@@ -10,8 +10,14 @@ A second variant of the same project (e.g., a different robot competition iterat
 * [docs/reports/](docs/reports) — PDF writeups (OpenCV + NAO-related references)
 * [docs/slides/](docs/slides/) — presentation decks
 * [docs/notes/](docs/notes/) — text notes / code snippets
-
-
+## System architecture (high-level)
+1. Perception
+* Camera stream from NAO (ALVideoDevice)
+* Detection primitives:
+  * Red ball detection (NAOqi +/or OpenCV pipeline)
+  * Landmark detection (ALLandMarkDetection)
+* Optional orientation aid: Visual compass (ALVisualCompass)
+* Decision / State machine
 
 ```graphql
 nao-robot-vision-motion/
