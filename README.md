@@ -18,7 +18,16 @@ A second variant of the same project (e.g., a different robot competition iterat
   * Landmark detection (ALLandMarkDetection)
 * Optional orientation aid: Visual compass (ALVisualCompass)
 2. Decision / State machine
-
+* States such as:
+  * SEARCH_RED_BALL
+  * FIND_LANDMARK
+* alignment/approach/verify
+* action execution (kick/hit)
+3. Motion & posture control
+* ALMotionProxy for walking and joint control
+* ALRobotPostureProxy for posture initialization
+* Configurable gait parameters
+  
 ```graphql
 nao-robot-vision-motion/
 ├─ README.md
