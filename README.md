@@ -21,14 +21,44 @@ A second variant of the same project (e.g., a different robot competition iterat
 * States such as:
   * SEARCH_RED_BALL
   * FIND_LANDMARK
-* alignment/approach/verify
-* action execution (kick/hit)
+  * alignment/approach/verify
+  * action execution (kick/hit)
 3. Motion & posture control
 * ALMotionProxy for walking and joint control
 * ALRobotPostureProxy for posture initialization
 * Configurable gait parameters
 ## Dependencies
-  
+* NAOqi C++ SDK (Aldebaran/SoftBank Robotics)
+* OpenCV (headers and libs available to your toolchain)
+* A Linux environment matching your NAOqi toolchain (often required for C++ builds)
+## Configure robot connection
+In the source, the robot IP is hardcoded (e.g., robotIP "192.168.1.101" / "192.168.1.103").
+Update it to your robot’s IP before building/running.
+## Build & Run (typical workflow)
+Exact build steps depend on how your NAOqi SDK is installed (qiBuild vs manual toolchain).
+This repo is structured so you can adapt either approach cleanly.
+### Option A — qiBuild (common NAOqi workflow)
+1. Install/configure qiBuild + NAOqi SDK
+2. Create a build folder and compile:
+```bash
+qibuild configure
+qibuild make
+```
+3. Deploy binary to NAO (or run remotely depending on your setup)
+Option B — manual CMake/g++ (if your SDK exposes include/lib paths)
+You’ll need to link against NAOqi libraries and OpenCV manually using your SDK’s include/lib directories.
+## Notes on licensing/attribution
+Some files include headers from Aldebaran Robotics example code.
+See [NOTICE](NOTICE) for attribution and keep original headers intact.
+
+## Suggested improvements (if you want to modernize this project)
+* Refactor into modules:
+  * perception/ (ball + landmark detection)
+  * control/ (walking + alignment)
+  * state_machine/ (explicit transitions + logging)
+* Replace hardcoded IP/config with a config file or CLI flags
+* Add a diagram + demo video/GIF in [assets/](assets/)
+
 ```graphql
 nao-robot-vision-motion/
 ├─ README.md
@@ -55,3 +85,8 @@ nao-robot-vision-motion/
       ├─ red-ball-det.txt
       └─ vision-exp.txt
 '''
+
+## System Pipeline
+
+![NAO Vision–Motion Pipeline](assets/diagrams/nao_vision_motion_pipeline.svg)
+
