@@ -2,6 +2,34 @@
 [Video Demo](https://youtu.be/r45bdkmdulo)<br>
 This repository contains a C++ robotics project built for the SoftBank/Aldebaran NAO humanoid robot using NAOqi proxies and OpenCV. The system integrates vision-based perception (red ball + landmark detection) with motion planning/control (walking, head scanning, alignment, and “kick/hit” actions) as a state-driven autonomous behavior.
 ## What's inside
+### Repository structure
+```graphql
+nao-robot-vision-motion/
+├─ README.md
+├─ LICENSE
+├─ NOTICE
+├─ .gitignore
+├─ CMakeLists.txt
+├─ src/
+│  ├─ nao_main.cpp
+│  └─ nao_main_alt_ip.cpp
+├─ assets/
+│  ├─ diagrams/
+│  │  └─ nao_vision_motion_pipeline.svg
+│  └─ media/
+│     ├─ NAO.jpg
+│     ├─ Nao_Robot_(Robocup_2016).jpg
+│     └─ STQZ2432.MP4
+└─ docs/
+   ├─ slides/
+   │  └─ Motion Control and Computer Vision Application in autonomous.pptx
+   └─ notes/
+      ├─ CompVisi_Chloe.txt
+      ├─ modified-red-ball-det.txt
+      ├─ red-ball-det.txt
+      └─ vision-exp.txt
+'''
+
 ### Core C++ programs (NAOqi + OpenCV)
 * [src/nao_main.cpp](src/nao_main.cpp) <br>
   Main integrated behavior: connects to NAO via NAOqi proxies, scans with head motion, detects targets (red ball/landmarks), estimates relative pose, and executes walking + alignment + action logic.
@@ -10,6 +38,11 @@ A second variant of the same project (e.g., a different robot competition iterat
 ### Documentation & competition materials
 * [docs/slides/](docs/slides/) — presentation decks
 * [docs/notes/](docs/Notes/) — code snippets
+
+## System Pipeline
+
+![NAO Vision–Motion Pipeline](assets/diagrams/nao_vision_motion_pipeline.svg)
+
 ## System architecture (high-level)
 1. Perception
 * Camera stream from NAO (ALVideoDevice)
@@ -51,34 +84,5 @@ You’ll need to link against NAOqi libraries and OpenCV manually using your SDK
 Some files include headers from Aldebaran Robotics example code.
 See [NOTICE](NOTICE) for attribution and keep original headers intact.
 
-```graphql
-nao-robot-vision-motion/
-├─ README.md
-├─ LICENSE
-├─ NOTICE
-├─ .gitignore
-├─ CMakeLists.txt
-├─ src/
-│  ├─ nao_main.cpp
-│  └─ nao_main_alt_ip.cpp
-├─ assets/
-│  ├─ diagrams/
-│  │  └─ nao_vision_motion_pipeline.svg
-│  └─ media/
-│     ├─ NAO.jpg
-│     ├─ Nao_Robot_(Robocup_2016).jpg
-│     └─ STQZ2432.MP4
-└─ docs/
-   ├─ slides/
-   │  └─ Motion Control and Computer Vision Application in autonomous.pptx
-   └─ notes/
-      ├─ CompVisi_Chloe.txt
-      ├─ modified-red-ball-det.txt
-      ├─ red-ball-det.txt
-      └─ vision-exp.txt
-'''
 
-## System Pipeline
-
-![NAO Vision–Motion Pipeline](assets/diagrams/nao_vision_motion_pipeline.svg)
 
