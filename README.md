@@ -28,7 +28,7 @@ nao-robot-vision-motion/
       ├─ modified-red-ball-det.txt
       ├─ red-ball-det.txt
       └─ vision-exp.txt
-'''
+```
 
 ### Core C++ programs (NAOqi + OpenCV)
 * [src/nao_main.cpp](src/nao_main.cpp) <br>
