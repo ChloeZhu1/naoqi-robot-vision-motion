@@ -7,6 +7,9 @@ This repository contains a C++ robotics project built for the SoftBank/Aldebaran
 * [src/nao_main_alt_ip.cpp](src/nao_main_alt_ip.cpp) <br>
 A second variant of the same project (e.g., a different robot competition iteration).
 ### Documentation & competition materials
+* [docs/reports/](docs/reports) — PDF writeups (OpenCV + NAO-related references)
+* [docs/slides/](docs/slides/) — presentation decks
+* [docs/notes/](docs/notes/) — text notes / code snippets
 
 
 
