@@ -1,4 +1,3 @@
-```bash
 
 ---
 
@@ -55,4 +54,4 @@ target_link_libraries(nao_vision_motion PRIVATE ${OpenCV_LIBS} ${NAOQI_LIBS})
 
 target_include_directories(nao_vision_motion_alt_ip PRIVATE ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(nao_vision_motion_alt_ip PRIVATE ${OpenCV_LIBS} ${NAOQI_LIBS})
-```
+
