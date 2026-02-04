@@ -45,7 +45,7 @@ qibuild configure
 qibuild make
 ```
 3. Deploy binary to NAO (or run remotely depending on your setup)
-Option B — manual CMake/g++ (if your SDK exposes include/lib paths)
+### Option B — manual CMake/g++ (if your SDK exposes include/lib paths)
 You’ll need to link against NAOqi libraries and OpenCV manually using your SDK’s include/lib directories.
 ## Notes on licensing/attribution
 Some files include headers from Aldebaran Robotics example code.
