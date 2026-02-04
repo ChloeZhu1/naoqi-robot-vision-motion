@@ -138,7 +138,7 @@ namespace
 	
 }
 //Global variable for hsv color wheel plot
-//RNG rng(12345);//»Æ¸Ë
+//RNG rng(12345);//é»„æ†
 int max_hue_range = 179;
 int max_step = 3; //nuber of pixel for each hue color
 int wheel_width = max_hue_range*max_step;
@@ -212,12 +212,12 @@ try{
 	motionProxy.moveInit();
 	Sleep(1000);
 	motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-	//motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//±£³ÖµÍÍ·21.4¶È:0.373
+	//motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//ä¿æŒä½å¤´21.4åº¦:0.373
 	Sleep(1000);
 	redball_detect(allballdata);
 	/*if(*(allballdata+4)==0)
 		{
-			CloseRedBallSearching(allballdata);//½ü´¦ºìÇòÑ°ÕÒÇò
+			CloseRedBallSearching(allballdata);//è¿‘å¤„çº¢çƒå¯»æ‰¾çƒ
 			if(*(allballdata+4)==0)
 				VerifyRedBallPresentBeforeHitting( allballdata);
 			//state=three; 
@@ -435,7 +435,7 @@ void Kick_off()
 		if(*(allballdata+4)==0)
 			{
 				//motionProxy.moveTo(0.3, 0.0, 0.0, MovConfig);
-				VerifyRedBallPresentBeforeHitting( allballdata);  //¼ì²âºìÇò
+				VerifyRedBallPresentBeforeHitting( allballdata);  //æ£€æµ‹çº¢çƒ
 		    }
 		else
 		{
@@ -463,7 +463,7 @@ void redball_detect( float *allballdata)
  Mat src, src_gray, frameHSV, channel[3], frameHSV_BW, channel_HSV[3];
  Mat pass[3];
  Mat frame, frameCopy, image;
-	 int cameraId = 1;//0:camera_up£¬1:camrea_bottom
+	 int cameraId = 1;//0:camera_upï¼Œ1:camrea_bottom
 	 cameraProxy.setActiveCamera(cameraId);
 	 std::string clientName = "test";
 	 clientName = cameraProxy.subscribe(clientName, kVGA, kBGRColorSpace, 1);//fps=5
@@ -471,7 +471,7 @@ void redball_detect( float *allballdata)
 	 cv::Mat imgHeader = cv::Mat(cv::Size(640, 480),CV_8UC3); 
 	 
 
- int Hm = 7;//°×Ìì6 ÍíÉÏ7
+ int Hm = 7;//ç™½å¤©6 æ™šä¸Š7
  
  //declare and initialize both parameters that are subjects to change
  int cannyThreshold = cannyThresholdInitialValue;
@@ -586,7 +586,7 @@ float CameraY=0;
              
 
 			d1_a=(m_center_y-240.0f)*47.64f/480.0f*0.01744f;
-			d1=(CameraHeight-redballradius)/tan(0.6929f+pitch+d1_a);//¶Ô±È
+			d1=(CameraHeight-redballradius)/tan(0.6929f+pitch+d1_a);//å¯¹æ¯”
 			d2_a=(320.0f-m_center_x)*60.92f/640.0f*0.01744f;
 			d2=d1/cos(d2_a);
 			Xw2=d2*cos(d2_a+yaw)+CameraX;
@@ -615,7 +615,7 @@ float CameraY=0;
 
 //display for test:
 	std::cout<< "...... "<<std::endl;
-	std::cout<< "ÒÔÏÂÎªredball¼ì²âÊı¾İ£º"<<std::endl;
+	std::cout<< "ä»¥ä¸‹ä¸ºredballæ£€æµ‹æ•°æ®ï¼š"<<std::endl;
 	std::cout<< "wzCamera: "<<d1_a<<std::endl;
 	std::cout<< "wyCamera: "<<d2_a<<std::endl;
 	std::cout<< "Distance_X: "<<Xw2<<std::endl;
@@ -627,12 +627,12 @@ float CameraY=0;
 }
 
 
-/********************Ñ°ÕÒºìÇò&×ßÏòºìÇò*****************************/
+/********************å¯»æ‰¾çº¢çƒ&èµ°å‘çº¢çƒ*****************************/
 void VerifyRedBallPresentBeforeHitting( float *allballdata)
 {
 	
 	tts.say("red ball searching!");
-	motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00, 0.3f);//Í·ÏÂµÍ21.4¶È:0.373
+	motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00, 0.3f);//å¤´ä¸‹ä½21.4åº¦:0.373
 	motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00, 0.2f);
 	
 	
@@ -663,9 +663,9 @@ while(*(allballdata+4) != 1)
 	switch(SEARCH_STATE)
 	{
 	     case STRAIGHT_FORWARD:
-				//look straight                           ÍùÕıÇ°·½¿´
+				//look straight                           å¾€æ­£å‰æ–¹çœ‹
 				std::cout<<"look straight forward..."<<std::endl;
-				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);//Interpolation²å²¹ up-down,speed 
+				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);//Interpolationæ’è¡¥ up-down,speed 
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00f, 0.2f);//left-right
 				//start to detect redball
 				redball_detect(allballdata); //callback "redball_detect" function
@@ -676,20 +676,20 @@ while(*(allballdata+4) != 1)
 				break;
 
 		 case STRAIGHT_LEFT:                      
-			      //look at left                        Íù×ó·½¿´£¨Í·²¿Ïò×óÆ«×ª45¶È--Æ«º½½Çyaw£©
+			      //look at left                        å¾€å·¦æ–¹çœ‹ï¼ˆå¤´éƒ¨å‘å·¦åè½¬45åº¦--åèˆªè§’yawï¼‰
 				 std::cout<<"look straight on left..."<<std::endl;
 				 motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);
 				 motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.785f, 0.2f);// pi/4, assuming counterclockwise is postive
 				 //start to detect redball
 				 redball_detect(allballdata); //callback "redball_detect" function                                            
-				 head_yaw = 0.785;                     //Êä³öÆ«º½½Ç45¶È
+				 head_yaw = 0.785;                     //è¾“å‡ºåèˆªè§’45åº¦
 				 if(*(allballdata+4) !=1){
 					SEARCH_STATE++;
 				}
 				break;
 
 		 case STRAIGHT_RIGHT: 
-			     //look at right                     ÍùÓÒ·½¿´£¨Í·²¿ÏòÓÒÆ«×ª45¶È--Æ«º½½Çyaw£©
+			     //look at right                     å¾€å³æ–¹çœ‹ï¼ˆå¤´éƒ¨å‘å³åè½¬45åº¦--åèˆªè§’yawï¼‰
 				std::cout<<"look straight on right..."<<std::endl;
 				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.00f, 0.3f);
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", -0.785f, 0.2f);
@@ -702,7 +702,7 @@ while(*(allballdata+4) != 1)
 				break;
 
 		 case DOWN_RIGHT:
-			    //look down right                    ÍùÓÒÏÂ·½¿´£¨Í·²¿ÏòÓÒÆ«×ª45¶È--Æ«º½½Çyaw£¬ÏòÏÂÆ«×ª20¶Èpitch£©
+			    //look down right                    å¾€å³ä¸‹æ–¹çœ‹ï¼ˆå¤´éƒ¨å‘å³åè½¬45åº¦--åèˆªè§’yawï¼Œå‘ä¸‹åè½¬20åº¦pitchï¼‰
 				std::cout<<"look down right...:"<<std::endl;
 				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", -0.785f, 0.2f);
@@ -715,7 +715,7 @@ while(*(allballdata+4) != 1)
 				break;
 
 		 case DOWN_FORWARD:
-			    //look down forward                    ÍùÕıÏÂ·½¿´£¨ÏòÏÂÆ«×ª20¶Èpitch£©
+			    //look down forward                    å¾€æ­£ä¸‹æ–¹çœ‹ï¼ˆå‘ä¸‹åè½¬20åº¦pitchï¼‰
 				std::cout<<"look down forward..."<<std::endl;
 				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.00f, 0.2f);
@@ -728,7 +728,7 @@ while(*(allballdata+4) != 1)
 				break;
 
 		 case DOWN_LEFT:     
-			    //look down left                    Íù×óÏÂ·½¿´£¨Í·²¿ÏòÓÒÆ«×ª45¶È--Æ«º½½Çyaw£¬ÏòÏÂÆ«×ª20¶Èpitch£©
+			    //look down left                    å¾€å·¦ä¸‹æ–¹çœ‹ï¼ˆå¤´éƒ¨å‘å³åè½¬45åº¦--åèˆªè§’yawï¼Œå‘ä¸‹åè½¬20åº¦pitchï¼‰
 				std::cout<<"look down left..."<<std::endl;
 				motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.31f, 0.3f);
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.785f, 0.2f);
@@ -815,38 +815,38 @@ while(*(allballdata+4) != 1)
 	std::cout<< "************"<<std::endl;
 	
 
-/////////ÒÆ¶¯ÖÁºìÇò///////////
-//µÚÒ»´Î£¬»úÆ÷ÈË×ªµ½Õı¶ÔºìÇòµÄ·½Ïò
+/////////ç§»åŠ¨è‡³çº¢çƒ///////////
+//ç¬¬ä¸€æ¬¡ï¼Œæœºå™¨äººè½¬åˆ°æ­£å¯¹çº¢çƒçš„æ–¹å‘
     float theta = head_yaw + *allballdata;
-	//angle = theta;//µÚÒ»¸ö×ª½Ç±£´æÔÚangleÖĞ
+	//angle = theta;//ç¬¬ä¸€ä¸ªè½¬è§’ä¿å­˜åœ¨angleä¸­
 
-	//»úÆ÷ÈËÍ·²¿µ÷Õı
+	//æœºå™¨äººå¤´éƒ¨è°ƒæ­£
     motionProxy.setMoveArmsEnabled(true, false);
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.5);
-	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.35f);//±£³ÖµÍÍ·21.4¶È:0.373
+	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.35f);//ä¿æŒä½å¤´21.4åº¦:0.373
 	//turn around
 	motionProxy.moveTo(0, 0, theta, MovConfig);
 
     motionProxy.setMoveArmsEnabled(true, false);
-//µÚ¶ş´Î£¬»úÆ÷ÈËÒÆ¶¯ÖÁ¾àÀëºìÇò40cm¾àÀë
+//ç¬¬äºŒæ¬¡ï¼Œæœºå™¨äººç§»åŠ¨è‡³è·ç¦»çº¢çƒ40cmè·ç¦»
 	if(*(allballdata+6)>0.4){
 	 motionProxy.moveTo(*(allballdata+6)-0.4, 0, 0, MovConfig);}// x,y,theta,confirmation 
 
-//µÚÈı´Î£¬»úÆ÷ÈËµÍÍ·ÔÙ´Î¼ì²âºìÇò£¬µ÷Õû½Ç¶È
+//ç¬¬ä¸‰æ¬¡ï¼Œæœºå™¨äººä½å¤´å†æ¬¡æ£€æµ‹çº¢çƒï¼Œè°ƒæ•´è§’åº¦
 	motionProxy.setMoveArmsEnabled(true, false);
     motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.3f);//±£³ÖµÍÍ·21.4¶È:0.373
+	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.00, 0.3f);//ä¿æŒä½å¤´21.4åº¦:0.373
 	//Sleep(1000);
 	motionProxy.waitUntilMoveIsFinished();
 	redball_detect(allballdata); //callback "redball_detect" function
     head_yaw = 0.00;
     
 	theta = head_yaw + *allballdata;
-	//angle += theta;//µÚ¶ş¸ö×ª½Ç±£´æÔÚangleÖĞ
+	//angle += theta;//ç¬¬äºŒä¸ªè½¬è§’ä¿å­˜åœ¨angleä¸­
 	motionProxy.setMoveArmsEnabled(true, false);
 	motionProxy.moveTo(0, 0, theta, MovConfig);
-    //compassProxy.moveStraightTo(*(allballdata+2)-0.3); //ÏòÇ°Ïòºó¾àÀë½ÃÕı£¬¾àºìÇò30cm
-	motionProxy.moveTo(*(allballdata+6)-0.3, 0, 0,MovConfig); //ÏòÇ°Ïòºó¾àÀë½ÃÕı£¬¾àºìÇò30cm
+    //compassProxy.moveStraightTo(*(allballdata+2)-0.3); //å‘å‰å‘åè·ç¦»çŸ«æ­£ï¼Œè·çº¢çƒ30cm
+	motionProxy.moveTo(*(allballdata+6)-0.3, 0, 0,MovConfig); //å‘å‰å‘åè·ç¦»çŸ«æ­£ï¼Œè·çº¢çƒ30cm
 	motionProxy.moveTo(0, 0, 1.57, MovConfig);//pi/2
     motionProxy.moveTo(0.5, 0, 0, MovConfig);
 	motionProxy.moveTo(0, 0, -1.57, MovConfig);
@@ -855,7 +855,7 @@ while(*(allballdata+4) != 1)
 
 /*********************************/
 
-/********************ÕÒ²»µ½¸ËµÄÇé¿öÏÂ****************************/
+/********************æ‰¾ä¸åˆ°æ†çš„æƒ…å†µä¸‹****************************/
 void MovetowardsRedBallBeforeHitting( float *allballdata)
 {
 	
@@ -870,7 +870,7 @@ void MovetowardsRedBallBeforeHitting( float *allballdata)
 			motionProxy.moveTo(WALKING_X,WALKING_Y,-0.69f,MovConfig_triangle);													
 		}
 		motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.1f);
-		motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//±£³ÖµÍÍ·21.4¶È:0.373	
+		motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//ä¿æŒä½å¤´21.4åº¦:0.373	
 		redball_detect( allballdata); //callback "redball_detect" function	
 		if(*(allballdata+4)==0)
 			 CloseRedBallSearching(allballdata);
@@ -883,11 +883,11 @@ void MovetowardsRedBallBeforeHitting( float *allballdata)
 		//angle =  *allballdata; 
 		//motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 
-		motionProxy.moveTo(0,0.07,0,MovConfig_triangle);//²àÒÆ	
+		motionProxy.moveTo(0,0.07,0,MovConfig_triangle);//ä¾§ç§»	
 		
 }
 
-/************NaoMark¶¨Î» + »úÆ÷ÈËÓëNaoMak¾àÀë¼ÆËã**********************************/
+/************NaoMarkå®šä½ + æœºå™¨äººä¸NaoMakè·ç¦»è®¡ç®—**********************************/
 
 bool landmark_Find( float *landmark, float *allballdata)
  {
@@ -927,7 +927,7 @@ bool landmark_Find( float *landmark, float *allballdata)
 					 std::vector<float>::iterator it;
 					  it= sensorAngles.begin();
 
-					  headYawAngle = wzCamera +(*it);//ĞŞÕıÉãÏñÍ·½¹µãÖÁmarkÖĞĞÄ
+					  headYawAngle = wzCamera +(*it);//ä¿®æ­£æ‘„åƒå¤´ç„¦ç‚¹è‡³markä¸­å¿ƒ
 
 				 //   std::cout<<"distance:"<<distanceFromCameraToLandmark<<std::endl<<"angle:"<<headYawAngle<<std::endl<<"wzCamera:"<<wzCamera<<std::endl;
 
@@ -947,7 +947,7 @@ bool landmark_Find( float *landmark, float *allballdata)
 					
 			 }
 /********************/
-//ÕÒ²»µ½LandMarkÖ±½Ó»÷Çò£¨Ğ´µÄ±È½Ï´Ö²Ú£©
+//æ‰¾ä¸åˆ°LandMarkç›´æ¥å‡»çƒï¼ˆå†™çš„æ¯”è¾ƒç²—ç³™ï¼‰
 if(mark_Flag == 0){
 
 	return 0;
@@ -991,17 +991,17 @@ if(mark_Flag == 0){
  }
 
  
- /*****landmark_µØÖ·***
+ /*****landmark_åœ°å€***
 	 *(landmark+3)=robotToLandmark.r1_c4;//x
 	 *(landmark+4)= robotToLandmark.r2_c4;//y
     /******/
-//----------------------------------- ¹¹Ôì»÷ÇòÖ±½ÇÈı½ÇĞÎ (ĞŞ¸Ä)--------------------------------------
+//----------------------------------- æ„é€ å‡»çƒç›´è§’ä¸‰è§’å½¢ (ä¿®æ”¹)--------------------------------------
 
 void TriangleCalculation(float *calcu_data, float *landmark, float *allballdata)  
 {
-	//±äÁ¿³õÊ¼»¯
+	//å˜é‡åˆå§‹åŒ–
 	float s = *(landmark+1);
-	float alpha = *landmark; //Í·²¿×ª½Ç£¬left:alpha>0 , right:alpha<0£¬¹¹ÔìÈı½ÇĞÎÊ±ÅĞ¶Ï²ÉÈ¡ÄÄÖÖ²½·¨
+	float alpha = *landmark; //å¤´éƒ¨è½¬è§’ï¼Œleft:alpha>0 , right:alpha<0ï¼Œæ„é€ ä¸‰è§’å½¢æ—¶åˆ¤æ–­é‡‡å–å“ªç§æ­¥æ³•
     float x = *(allballdata+6);
 	float l2 = 0.00;
 	float l  = 0.00;
@@ -1027,20 +1027,20 @@ void TriangleCalculation(float *calcu_data, float *landmark, float *allballdata)
 		{
 		    theta1 = Theta - pi/2;
             turnAngle1 = - (pi/2 - theta1);
-            dis1 = (x*cos(theta1) + 0.1);//×ó²à²½ÒÆ¶¯dis1¾àÀë£¬ĞŞÕıÖµ0.0
+            dis1 = (x*cos(theta1) + 0.1);//å·¦ä¾§æ­¥ç§»åŠ¨dis1è·ç¦»ï¼Œä¿®æ­£å€¼0.0
             turnAngle2 = 0;
-            dis2 = x*sin(theta1)-0.1; //Ç°½ødis2¾àÀë
-            //#´ËÇé¿ö»úÆ÷ÈË»¹ĞèÈÆÇóË³Ê±ÕëĞı×ª90¶È		
+            dis2 = x*sin(theta1)-0.1; //å‰è¿›dis2è·ç¦»
+            //#æ­¤æƒ…å†µæœºå™¨äººè¿˜éœ€ç»•æ±‚é¡ºæ—¶é’ˆæ—‹è½¬90åº¦		
 		}
             
         else if (Theta < pi/2)
 		{
 		    theta1 = pi/2 - Theta;
             turnAngle1 = Theta;
-            dis1 = - (x*sin(Theta) + 0.1);    //ÏòÓÒ²à²½d1¾àÀë,ĞŞÕıÖµ         
+            dis1 = - (x*sin(Theta) + 0.1);    //å‘å³ä¾§æ­¥d1è·ç¦»,ä¿®æ­£å€¼         
             turnAngle2 = 0;
-            dis2 = x*cos(Theta)-0.1; //ÏòÇ°ÒÆ¶¯d2¾àÀë
-            //#´ËÇé¿ö»úÆ÷ÈË»¹ĞèÈÆÇóÄæÊ±ÕëĞı×ª90¶È
+            dis2 = x*cos(Theta)-0.1; //å‘å‰ç§»åŠ¨d2è·ç¦»
+            //#æ­¤æƒ…å†µæœºå™¨äººè¿˜éœ€ç»•æ±‚é€†æ—¶é’ˆæ—‹è½¬90åº¦
 		}
         
 		*calcu_data = dis1;
@@ -1070,7 +1070,7 @@ void TriangleCalculation(float *calcu_data, float *landmark, float *allballdata)
 		{
 		    theta1 = Theta - pi/2;
             turnAngle1 = - theta1;
-            dis1 = x*sin(theta1) + 0.1; //Ïò×ó²à²½dis1¾àÀë£¬ĞŞÕıÖµ
+            dis1 = x*sin(theta1) + 0.1; //å‘å·¦ä¾§æ­¥dis1è·ç¦»ï¼Œä¿®æ­£å€¼
             turnAngle2 = 0;
             dis2 = x*cos(theta1)-0.1;
 		
@@ -1080,7 +1080,7 @@ void TriangleCalculation(float *calcu_data, float *landmark, float *allballdata)
 		{
 		    theta1 = pi/2 - Theta;
             turnAngle1 = Theta;
-            dis1 = - (x*sin(Theta)- 0.1); //ÏòÓÒ²à²½dis1¾àÀë£¬ĞŞÕıÖµ
+            dis1 = - (x*sin(Theta)- 0.1); //å‘å³ä¾§æ­¥dis1è·ç¦»ï¼Œä¿®æ­£å€¼
             turnAngle2 = 0;
             dis2 = x*cos(Theta)-0.1;
 		
@@ -1101,9 +1101,9 @@ void TriangleCalculation(float *calcu_data, float *landmark, float *allballdata)
 	
 	}
 
-}//#------------------------------------------- ¹¹ÔìÖ±½ÇÈı½ÇĞÎ (ĞŞ¸Ä)-----------------------------------------#  
+}//#------------------------------------------- æ„é€ ç›´è§’ä¸‰è§’å½¢ (ä¿®æ”¹)-----------------------------------------#  
 
-//#------------------------------------------- µ÷Õû»÷ÇòÎ»ÖÃ -----------------------------------------#     
+//#------------------------------------------- è°ƒæ•´å‡»çƒä½ç½® -----------------------------------------#     
 void AdjustPosition( float *allballdata, float *calcu_data, float *landmark)
 {
     float dis1 = *calcu_data;
@@ -1153,7 +1153,7 @@ void AdjustPosition( float *allballdata, float *calcu_data, float *landmark)
 	
 	}
 
-	//¾àÀëĞŞÕı
+	//è·ç¦»ä¿®æ­£
 	motionProxy.waitUntilMoveIsFinished();
     motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.373, 0.5);
 	motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.3);
@@ -1161,14 +1161,14 @@ void AdjustPosition( float *allballdata, float *calcu_data, float *landmark)
 	redball_detect( allballdata); //callback "redball_detect" function
 
     motionProxy.setMoveArmsEnabled(true, false);
-    //#½ÓÏÂÀ´£¬»úÆ÷ÈËµ÷ÕûÖÁ¾àÀëºìÇòdx»÷ÇòµÄÎ»ÖÃ
-    motionProxy.moveTo(*(allballdata+2)-dx,0,0,MovConfig); //ÏòÇ°Ïòºó¾àÀë½ÃÕı
+    //#æ¥ä¸‹æ¥ï¼Œæœºå™¨äººè°ƒæ•´è‡³è·ç¦»çº¢çƒdxå‡»çƒçš„ä½ç½®
+    motionProxy.moveTo(*(allballdata+2)-dx,0,0,MovConfig); //å‘å‰å‘åè·ç¦»çŸ«æ­£
                     
 }
 
 
 ////////////////////////////
-void openhand()//Ç°Í·´¥Ãş¿ªÊ¼openhand
+void openhand()//å‰å¤´è§¦æ‘¸å¼€å§‹openhand
 {
 
 	  float headTouchedButtonFlag=0;
@@ -1183,14 +1183,14 @@ void openhand()//Ç°Í·´¥Ãş¿ªÊ¼openhand
 				std::vector<float> position(6,0);	
 				position[2] = 0.2977f;//0.227
 				motionProxy.setPositions("Torso", 2, position,0.15, 63);
-			//	Sleep(1000);                        //¶×ÏÂ
+			//	Sleep(1000);                        //è¹²ä¸‹
 				AL::ALValue names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw","RHand");
 				AL::ALValue stiffnessLists=0.7f;
 				AL::ALValue  timeLists=1.0f;
-				motionProxy.stiffnessInterpolation(names, stiffnessLists, timeLists);//ÉÏ¸Õ
+				motionProxy.stiffnessInterpolation(names, stiffnessLists, timeLists);//ä¸Šåˆš
   
 			    names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-				AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0);//Right Ô¤±¸grab
+				AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0);//Right é¢„å¤‡grab
 	            motionProxy.setAngles(names,Angles, 0.1);	  
 			
 				motionProxy.stiffnessInterpolation("RHand", 0.7, 1);
@@ -1202,7 +1202,7 @@ void openhand()//Ç°Í·´¥Ãş¿ªÊ¼openhand
 	  }  
 }
 
-void closehand()//ºóÍ·´¥Ãş¿ªÊ¼closehand
+void closehand()//åå¤´è§¦æ‘¸å¼€å§‹closehand
 {
 
 	  float headTouchedButtonFlag=0;
@@ -1219,7 +1219,7 @@ void closehand()//ºóÍ·´¥Ãş¿ªÊ¼closehand
 	  }
 }
 
-void begin_puthand()//ÖĞ¼ä´¥Ãş¿ªÊ¼¿ªÊ¼
+void begin_puthand()//ä¸­é—´è§¦æ‘¸å¼€å§‹å¼€å§‹
 {
 
 	  float headTouchedButtonFlag=0;
@@ -1229,13 +1229,13 @@ void begin_puthand()//ÖĞ¼ä´¥Ãş¿ªÊ¼¿ªÊ¼
 		  if(headTouchedButtonFlag==1.0)
 			{  
 				AL::ALValue    names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-				AL::ALValue Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//·­ÊÖ--
+				AL::ALValue Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//ç¿»æ‰‹--
 				motionProxy.angleInterpolationWithSpeed(names,Angles, 0.1);
 			//	Sleep(500);
-				Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ÉìÖ±£¬ÊÖÑ¡×ª-
+				Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ä¼¸ç›´ï¼Œæ‰‹é€‰è½¬-
 				motionProxy.angleInterpolationWithSpeed(names,Angles, 0.1);
 			//	Sleep(500);
-				Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xÏòºó   //+Ô¤±¸//1.58,-0.503,0.350,0,1.58
+				Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xå‘å   //+é¢„å¤‡//1.58,-0.503,0.350,0,1.58
 				motionProxy.angleInterpolationWithSpeed(names,Angles, 0.1);//1.92
 			//	Sleep(500);	
 
@@ -1252,7 +1252,7 @@ void openclose()
 	   float  MiddleTactilTouched=0;
 
 	   AL::ALValue  names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-	   AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0);//Right Ô¤±¸grab
+	   AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0);//Right é¢„å¤‡grab
 	   motionProxy.setAngles(names,Angles, 0.1);	
 
 	   int flag=1;
@@ -1294,19 +1294,19 @@ void  HitBall( float Distance, float HitSpeed)//"RShoulderPitch","RShoulderRoll"
 	std::vector<float> position(6,0);	
 	position[2] = 0.2977f;//0.227
 	motionProxy.setPositions("Torso", 2, position,0.15, 63);
-	Sleep(500);                        //¶×ÏÂ
+	Sleep(500);                        //è¹²ä¸‹
 
-	//---------------------------Ì§ÊÖ---------------------------------//
+	//---------------------------æŠ¬æ‰‹---------------------------------//
 	   AL::ALValue   names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-	   AL::ALValue   Angles = AL::ALValue::array(1.4328,-0.5,0.070,1.57,0);    //xÏòºó   //+Ô¤±¸//1.58,-0.503,0.350,0,1.58
+	   AL::ALValue   Angles = AL::ALValue::array(1.4328,-0.5,0.070,1.57,0);    //xå‘å   //+é¢„å¤‡//1.58,-0.503,0.350,0,1.58
 	   motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 	   Sleep(500);
 	 
-	   Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.57);//ÉìÖ±£¬ÊÖÑ¡×ª-
+	   Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.57);//ä¼¸ç›´ï¼Œæ‰‹é€‰è½¬-
 	   motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 	   Sleep(500);
 
-	   Angles = AL::ALValue::array(1.4328,0,1.4328,1.57,-0.37);//ÉìÖ±£¬ÊÖÑ¡×ª-
+	   Angles = AL::ALValue::array(1.4328,0,1.4328,1.57,-0.37);//ä¼¸ç›´ï¼Œæ‰‹é€‰è½¬-
 	   motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 
 	   Sleep(500);
@@ -1316,12 +1316,12 @@ void  HitBall( float Distance, float HitSpeed)//"RShoulderPitch","RShoulderRoll"
 	 if(Distance<0.5)
 	   {    
 			AL::ALValue names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-			AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,-0.33);//Right Ô¤±¸//wrist	
+			AL::ALValue Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,-0.33);//Right é¢„å¤‡//wrist	
          	AL::ALValue minSpeedFraction=0.1f;
 			motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 			Sleep(500);	
 			AL::ALValue maxSpeedFraction= HitSpeed;
-			Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0.36);//´òÇò
+			Angles =AL::ALValue::array(1.4328,0,1.4328,1.57,0.36);//æ‰“çƒ
 			motionProxy.angleInterpolationWithSpeed(names,Angles, maxSpeedFraction);
 			Sleep(500);
 		}
@@ -1329,12 +1329,12 @@ void  HitBall( float Distance, float HitSpeed)//"RShoulderPitch","RShoulderRoll"
 	 else if((1.5<=Distance) && (Distance<=2.0))
 	   {
 			AL::ALValue names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-			AL::ALValue Angles =AL::ALValue::array(1.4328,-0.314,+1.4328,1.57,0);//Right Ô¤±¸//ROll	
+			AL::ALValue Angles =AL::ALValue::array(1.4328,-0.314,+1.4328,1.57,0);//Right é¢„å¤‡//ROll	
 	        AL::ALValue minSpeedFraction=0.1f;
 			motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 			Sleep(500);
 			AL::ALValue maxSpeedFraction= HitSpeed;
-			Angles =AL::ALValue::array(1.4328,0.26,1.4328,1.57,0);//´òÇò
+			Angles =AL::ALValue::array(1.4328,0.26,1.4328,1.57,0);//æ‰“çƒ
 			motionProxy.angleInterpolationWithSpeed(names,Angles, maxSpeedFraction);
 			Sleep(500);
 
@@ -1343,25 +1343,25 @@ void  HitBall( float Distance, float HitSpeed)//"RShoulderPitch","RShoulderRoll"
     else
 	    {
 			AL::ALValue names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-		    AL::ALValue Angles =AL::ALValue::array(1.4328,-0.314,+1.4328,1.57,-0.43);//Right Ô¤±¸//Roll and wrist  (1.4328,-0.33*HitSpeed,+1.4328,1.57,-0.33);
+		    AL::ALValue Angles =AL::ALValue::array(1.4328,-0.314,+1.4328,1.57,-0.43);//Right é¢„å¤‡//Roll and wrist  (1.4328,-0.33*HitSpeed,+1.4328,1.57,-0.33);
 	        AL::ALValue minSpeedFraction=0.1f;
 			motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 			Sleep(500);
 			maxSpeedFraction=HitSpeed;
-			Angles =AL::ALValue::array(1.4328,0.26,1.4328,1.57,0.58); //  ´òÇò 	Angles =AL::ALValue::array(1.4328,0.33*HitSpeed,1.4328,1.57,0.3); 
+			Angles =AL::ALValue::array(1.4328,0.26,1.4328,1.57,0.58); //  æ‰“çƒ 	Angles =AL::ALValue::array(1.4328,0.33*HitSpeed,1.4328,1.57,0.3); 
 			motionProxy.angleInterpolationWithSpeed(names,Angles, maxSpeedFraction);
 			Sleep(500);
 		
 		}
 
 	   names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-	   Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//·­ÊÖ--
+	   Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//ç¿»æ‰‹--
        motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 	   Sleep(500);
-	   Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ÉìÖ±£¬ÊÖÑ¡×ª-
+	   Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ä¼¸ç›´ï¼Œæ‰‹é€‰è½¬-
 	   motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 	   Sleep(500);
-	   Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xÏòºó   //+Ô¤±¸//1.58,-0.503,0.350,0,1.58
+	   Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xå‘å   //+é¢„å¤‡//1.58,-0.503,0.350,0,1.58
 	   motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);//1.92
 	   Sleep(500);
 
@@ -1371,36 +1371,36 @@ void  HitBall( float Distance, float HitSpeed)//"RShoulderPitch","RShoulderRoll"
 }
 void DirectHit()
 {	
-	/*****************»÷´ò*********/
+	/*****************å‡»æ‰“*********/
 	AL::ALValue names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-	AL::ALValue Angles =AL::ALValue::array(1.4328,-0.33,+1.4328,1.57,-0.33);//Right Ô¤±¸//Roll and wrist  (1.4328,-0.33*HitSpeed,+1.4328,1.57,-0.33);
+	AL::ALValue Angles =AL::ALValue::array(1.4328,-0.33,+1.4328,1.57,-0.33);//Right é¢„å¤‡//Roll and wrist  (1.4328,-0.33*HitSpeed,+1.4328,1.57,-0.33);
 	AL::ALValue minSpeedFraction=0.1f;
 	motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 	Sleep(1500);
 	AL::ALValue maxSpeedFraction=1.0f;
-	Angles =AL::ALValue::array(1.4328,0.33,1.4328,1.57,0.3); //  ´òÇò 	Angles =AL::ALValue::array(1.4328,0.33*HitSpeed,1.4328,1.57,0.3); 
+	Angles =AL::ALValue::array(1.4328,0.33,1.4328,1.57,0.3); //  æ‰“çƒ 	Angles =AL::ALValue::array(1.4328,0.33*HitSpeed,1.4328,1.57,0.3); 
 	motionProxy.angleInterpolationWithSpeed(names,Angles, maxSpeedFraction);
    //Sleep(500);
-	/*************·Å¸Ë***********/	
+	/*************æ”¾æ†***********/	
 	names=AL::ALValue::array("RShoulderPitch","RShoulderRoll","RElbowRoll","RElbowYaw","RWristYaw");
-	Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//·­ÊÖ--
+	Angles = AL::ALValue::array(1.4328,-0.5,1.4328,1.57,-1.36);//ç¿»æ‰‹--
     motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 //   Sleep(500);
-	Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ÉìÖ±£¬ÊÖÑ¡×ª-
+	Angles = AL::ALValue::array(1.4328,-0.5,0.07,1.57,0);//ä¼¸ç›´ï¼Œæ‰‹é€‰è½¬-
 	motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);
 //   Sleep(500);
-	Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xÏòºó   //+Ô¤±¸//1.58,-0.503,0.350,0,1.58
+	Angles = AL::ALValue::array(1.4328,-0.5,0.07,0,1.57);    //xå‘å   //+é¢„å¤‡//1.58,-0.503,0.350,0,1.58
 	motionProxy.angleInterpolationWithSpeed(names,Angles, minSpeedFraction);//1.92
 //   Sleep(500);
 }
 
-/************½ü´¦ºìÇòÑ°ÕÒÇò***********/
+/************è¿‘å¤„çº¢çƒå¯»æ‰¾çƒ***********/
 void CloseRedBallSearching(float *allballdata)
 {
 	tts.say(" red ball searching");
 	motionProxy.setMoveArmsEnabled(true, false);
 	motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//±£³ÖµÍÍ·21.4¶È:0.373
+	motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//ä¿æŒä½å¤´21.4åº¦:0.373
 
 	int state=1;
 	const int StateOne=1;
@@ -1504,7 +1504,7 @@ void CloseRedBallSearching(float *allballdata)
 								theta = HeadYaw + *allballdata;
 								motionProxy.moveTo(0, 0, theta, MovConfig_triangle);
 								motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-								motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//±£³ÖµÍÍ·21.4¶È:0.373
+								motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//ä¿æŒä½å¤´21.4åº¦:0.373
 								redball_detect(allballdata);
 								if(*(allballdata+4)==0)
 								    {
@@ -1512,9 +1512,9 @@ void CloseRedBallSearching(float *allballdata)
 									    state=StateOne;
 										break;
 									}
-								motionProxy.moveTo(*(allballdata+6)-0.3, 0, 0,  MovConfig_triangle); //ÏòÇ°Ïòºó¾àÀë½ÃÕı£¬¾àºìÇò30c					
+								motionProxy.moveTo(*(allballdata+6)-0.3, 0, 0,  MovConfig_triangle); //å‘å‰å‘åè·ç¦»çŸ«æ­£ï¼Œè·çº¢çƒ30c					
 								redball_detect(allballdata);
-								angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+								angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 								motionProxy.moveTo(0, 0, angle, MovConfig_triangle);
 								redball_detect(allballdata);
 								ENDLOOP =true;
@@ -1547,7 +1547,7 @@ void LandMarkSearching( float *allballdata )
 			motionProxy.moveTo(WALKING_X,WALKING_Y,-0.69f,MovConfig_triangle);													
 		}
 		motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.1f);
-		motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//±£³ÖµÍÍ·21.4¶È:0.373	
+		motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//ä¿æŒä½å¤´21.4åº¦:0.373	
 		redball_detect( allballdata); //callback "redball_detect" function	
 		if(*(allballdata+4)==0)
 			 CloseRedBallSearching(allballdata);
@@ -1560,7 +1560,7 @@ void LandMarkSearching( float *allballdata )
 		angle =  *allballdata; 
 		motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 
-		motionProxy.moveTo(0,0.07,0,MovConfig_triangle);//²àÒÆ	
+		motionProxy.moveTo(0,0.07,0,MovConfig_triangle);//ä¾§ç§»	
 }
 
 /********************/
@@ -1693,7 +1693,7 @@ void TRIANGLE_MAKING( float *allballdata,  float *landmark )
 				{
 
 					motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.1f);
-					motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//±£³ÖµÍÍ·21.4¶È:0.373	
+					motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.1f);//ä¿æŒä½å¤´21.4åº¦:0.373	
 					redball_detect( allballdata); //callback "redball_detect" function	
 					if(*(allballdata+4)==0)
 					{
@@ -1702,7 +1702,7 @@ void TRIANGLE_MAKING( float *allballdata,  float *landmark )
 		 				break;
 					}
                        
-					angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+					angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 					
 					motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 
@@ -1710,7 +1710,7 @@ void TRIANGLE_MAKING( float *allballdata,  float *landmark )
 					
 					motionProxy.moveTo(*(allballdata+6)-0.16,0,0,MovConfig_triangle);	
 					redball_detect( allballdata); //callback "redball_detect" function	
-					angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+					angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 					motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 					redball_detect( allballdata); //callback "redball_detect" function						 			
 				}
@@ -1761,7 +1761,7 @@ void TRIANGLE_MAKING( float *allballdata,  float *landmark )
 														
 										}
 									    CloseRedBallSearching(allballdata);
-									    Landmarkflag= landmark_Find(landmark, allballdata);//×¢Òâ£¡
+									    Landmarkflag= landmark_Find(landmark, allballdata);//æ³¨æ„ï¼
 			
 								}
 
@@ -1797,19 +1797,19 @@ void TRIANGLE_MAKING( float *allballdata,  float *landmark )
 
 }
 
-/**************NIGHT_SunDwon**ÈÕÂä**********
+/**************NIGHT_SunDwon**æ—¥è½**********
 float YellowStickDetect_SunDown(  )
 {
 
 	//tts.say("yellow stick searching");
 	RNG rng(12345);
-    int Hm = 27;//18 ÔçÉÏ //27 ÍíÉÏ
+    int Hm = 27;//18 æ—©ä¸Š //27 æ™šä¸Š
 	int Sm = 55;
-	int Vm = 171;//125 ÔçÉÏ //171  ÍíÉÏ
+	int Vm = 171;//125 æ—©ä¸Š //171  æ™šä¸Š
 	int HM = 50;
 	int SM = 255;
 	int VM = 255;
-	int cameraId = 0;//0ÉÏ£¬1ÏÂ
+	int cameraId = 0;//0ä¸Šï¼Œ1ä¸‹
 	cameraProxy.setActiveCamera(cameraId);
 	 std::string clientName =cameraProxy.subscribe("test", kVGA, kBGRColorSpace, 1);//fps=5
 	
@@ -1820,7 +1820,7 @@ float YellowStickDetect_SunDown(  )
       float centerX=0;
 	
 
-	//vector<vector<Point>> contours;//ÏÂÃæµÄ
+	//vector<vector<Point>> contours;//ä¸‹é¢çš„
 	//vector<Vec4i> hierarchy;
 	for(int i=0;i<2;i++  )
 	{
@@ -1865,7 +1865,7 @@ float YellowStickDetect_SunDown(  )
 		  
 		   }
 
-				//imshow("Ô­Í¼",img2);
+				//imshow("åŸå›¾",img2);
 
 
 			if (waitKey(10) >= 0)
@@ -1881,19 +1881,19 @@ float YellowStickDetect_SunDown(  )
 }
 /***********************/
 
-/******Sun_Up*******ÈÕ³ö**********/
+/******Sun_Up*******æ—¥å‡º**********/
 float YellowStickDetect_SunUp(  )
 {
 
 	//tts.say("yellow stick searching");
 	RNG rng(12345);
-    int Hm = 27;//18 ÔçÉÏ//ÍíÉÏ 27
+    int Hm = 27;//18 æ—©ä¸Š//æ™šä¸Š 27
 	int Sm = 55;
-	int Vm = 171;//125 ÔçÉÏ  //ÍíÉÏ 171 
+	int Vm = 171;//125 æ—©ä¸Š  //æ™šä¸Š 171 
 	int HM = 50;
 	int SM = 255;
 	int VM = 255;
-	int cameraId = 0;//0ÉÏ£¬1ÏÂ
+	int cameraId = 0;//0ä¸Šï¼Œ1ä¸‹
 	cameraProxy.setActiveCamera(cameraId);
 	 std::string clientName =cameraProxy.subscribe("test", kVGA, kBGRColorSpace, 1);//fps=5
 	
@@ -1904,7 +1904,7 @@ float YellowStickDetect_SunUp(  )
       float centerX=0;
 	
 
-	//vector<vector<Point>> contours;//ÏÂÃæµÄ
+	//vector<vector<Point>> contours;//ä¸‹é¢çš„
 	//vector<Vec4i> hierarchy;
 	for(int i=0;i<2;i++  )
 	{
@@ -1949,7 +1949,7 @@ float YellowStickDetect_SunUp(  )
 		  
 		   }
 
-				//imshow("Ô­Í¼",img2);
+				//imshow("åŸå›¾",img2);
 
 
 			if (waitKey(10) >= 0)
@@ -2012,16 +2012,16 @@ void STICK_RED_Triangle(  float *allballdata  )
 	/*********************
 	
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.1f);
-				motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.1f);//±£³ÖµÍÍ·21.4¶È:0.373
+				motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.1f);//ä¿æŒä½å¤´21.4åº¦:0.373
 				redball_detect(allballdata);
 				if(*(allballdata+4)==0)
 					    CloseRedBallSearching(allballdata);
 					
-				angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+				angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 				motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 			    motionProxy.moveTo(*(allballdata+6)-0.30,0,0,MovConfig_triangle);
 				redball_detect(allballdata);
-			    angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+			    angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 				motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 	 YellowBallAngle= YellowStickSearching();
 	 if( YellowBallAngle==0)
@@ -2096,7 +2096,7 @@ void STICK_RED_Triangle(  float *allballdata  )
 
 				 /**************/
 				motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-				motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//±£³ÖµÍÍ·21.4¶È:0.373
+				motionProxy.angleInterpolationWithSpeed("HeadPitch",0.373, 0.2f);//ä¿æŒä½å¤´21.4åº¦:0.373
 				Sleep(1000);
 				redball_detect(allballdata);
 				if(*(allballdata+4)==0)
@@ -2107,7 +2107,7 @@ void STICK_RED_Triangle(  float *allballdata  )
 						//state=three; 
 		 				//break;
 					}
-				angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+				angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 				motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 			    motionProxy.moveTo(*(allballdata+6)-0.30,0,0,MovConfig_triangle);
 				redball_detect(allballdata);
@@ -2117,7 +2117,7 @@ void STICK_RED_Triangle(  float *allballdata  )
 			 else
 			 {
 					motionProxy.angleInterpolationWithSpeed("HeadYaw", 0.0, 0.2f);
-					motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.2f);//±£³ÖµÍÍ·21.4¶È:0.373	
+					motionProxy.angleInterpolationWithSpeed("HeadPitch",0.40, 0.2f);//ä¿æŒä½å¤´21.4åº¦:0.373	
 					redball_detect( allballdata); //callback "redball_detect" function	
 					
 					if(*(allballdata+4)==0)
@@ -2126,7 +2126,7 @@ void STICK_RED_Triangle(  float *allballdata  )
 							state=three; 
 		 					break;
 						}
-					angle =  *allballdata; //ÒıÓÃ±äÁ¿·µ»ØÊıÖµ
+					angle =  *allballdata; //å¼•ç”¨å˜é‡è¿”å›æ•°å€¼
 					motionProxy.moveTo(0, 0, angle, MovConfig_triangle);	
 					motionProxy.moveTo(*(allballdata+6)-0.16,0,0,MovConfig_triangle);
 					redball_detect( allballdata); 
@@ -2155,7 +2155,7 @@ void STICK_RED_Triangle(  float *allballdata  )
   }
 }
 
-/**********Task_Two  ÈÎÎñ¶ş************/
+/**********Task_Two  ä»»åŠ¡äºŒ************/
 void Task_two()
  {
 	 float  YellowAngle=0;
