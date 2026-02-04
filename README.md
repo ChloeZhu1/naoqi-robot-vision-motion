@@ -17,7 +17,7 @@ A second variant of the same project (e.g., a different robot competition iterat
   * Red ball detection (NAOqi +/or OpenCV pipeline)
   * Landmark detection (ALLandMarkDetection)
 * Optional orientation aid: Visual compass (ALVisualCompass)
-* Decision / State machine
+2. Decision / State machine
 
 ```graphql
 nao-robot-vision-motion/
