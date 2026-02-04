@@ -9,7 +9,7 @@ This repository contains a C++ robotics project built for the SoftBank/Aldebaran
 A second variant of the same project (e.g., a different robot competition iteration).
 ### Documentation & competition materials
 * [docs/slides/](docs/slides/) — presentation decks
-* [docs/notes/](docs/notes/) — text notes / code snippets
+* [docs/notes/](docs/Notes/) — code snippets
 ## System architecture (high-level)
 1. Perception
 * Camera stream from NAO (ALVideoDevice)
