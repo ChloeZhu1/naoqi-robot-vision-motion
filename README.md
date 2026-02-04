@@ -3,9 +3,9 @@ This repository contains a C++ robotics project built for the SoftBank/Aldebaran
 ## What's inside
 ### Core C++ programs (NAOqi + OpenCV)
 * [src/nao_main.cpp](src/nao_main.cpp) <br>
-  Main integrated behavior: connects to NAO via NAOqi proxies, scans with head motion, detects targets (red ball / landmarks), estimates relative pose, and executes walking + alignment + action logic.
-* src/nao_main_alt_ip.cpp <br>
-A second variant of the same project (e.g., different robot IP / tuning / competition iteration).
+  Main integrated behavior: connects to NAO via NAOqi proxies, scans with head motion, detects targets (red ball/landmarks), estimates relative pose, and executes walking + alignment + action logic.
+* [src/nao_main_alt_ip.cpp](src/nao_main_alt_ip.cpp) <br>
+A second variant of the same project (e.g., a different robot competition iteration).
 
 ### Documentation & competition materials
 
