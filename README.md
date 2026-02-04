@@ -1,5 +1,5 @@
 # NAO Robot Vision + Motion Control (NAOqi + OpenCV, C++) 
-[Video Demo](https://youtu.be/r45bdkmdulo)
+[Video Demo](https://youtu.be/r45bdkmdulo)<br>
 This repository contains a C++ robotics project built for the SoftBank/Aldebaran NAO humanoid robot using NAOqi proxies and OpenCV. The system integrates vision-based perception (red ball + landmark detection) with motion planning/control (walking, head scanning, alignment, and “kick/hit” actions) as a state-driven autonomous behavior.
 ## What's inside
 ### Core C++ programs (NAOqi + OpenCV)
